@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CharController_Motor : MonoBehaviour {
 
@@ -46,6 +47,7 @@ public class CharController_Motor : MonoBehaviour {
 	void Die() {
 		isDead = true;
 		Debug.Log("Игрок умер от ловушки!");
+		SceneManager.LoadScene("DieScene");
 		// Здесь можно добавить эффекты смерти, звуки, анимации и т.д.
 	}
 
