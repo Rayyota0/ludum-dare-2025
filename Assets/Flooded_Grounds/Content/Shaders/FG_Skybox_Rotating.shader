@@ -2,8 +2,8 @@
 
 Shader "Flooded_Grounds/Skybox_Rotating" {
 Properties {
-	_Tint ("Tint Color", Color) = (.5, .5, .5, .5)
-	[Gamma] _Exposure ("Exposure", Range(0, 8)) = 1.0
+	_Tint ("Tint Color", Color) = (.02, .02, .02, .5) // Почти черный
+	[Gamma] _Exposure ("Exposure", Range(0, 8)) = 0.2 // Очень темно
 	_Rotation ("Rotation", Range(0, 360)) = 0
 	_RotSpeed ("Rotation Speed", Range(0, 360)) = 0
 	[NoScaleOffset] _Tex ("Cubemap   (HDR)", Cube) = "grey" {}
