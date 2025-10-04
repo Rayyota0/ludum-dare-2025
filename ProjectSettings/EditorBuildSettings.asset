@@ -4,5 +4,15 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/StartMenu.unity
+    guid: 35f5bcb3764cd644e82382f51543f414
+  - enabled: 1
+    path: Assets/Scenes/EgorScene.unity
+    guid: cff5e84fc013c6a43a0c1743a91eab52
+  - enabled: 1
+    path: Assets/Scenes/DieScene.unity
+    guid: 95261ebc20538ea449e660c282f31cd8
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

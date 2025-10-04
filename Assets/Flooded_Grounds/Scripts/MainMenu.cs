@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MainMenu : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("MainMenu Start");
+    }
+
+    void Update()
+    {
+        
+    }
+
+    public void StartGame()
+    {
+        Debug.Log("StartGame");
+        SceneManager.LoadScene("EgorScene");
+    }
+
+    public void ExitGame()
+    {
+        Debug.Log("ExitGame");
+        Application.Quit();
+    }
+}
