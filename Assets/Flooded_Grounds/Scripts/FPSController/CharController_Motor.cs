@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class CharController_Motor : MonoBehaviour {
 
-	public float speed = 10.0f;
+	public float speed = 5.0f;
 	public float sensitivity = 30.0f;
 	public float WaterHeight = 15.5f;
+	public float jumpForce = 2.0f;
 	CharacterController character;
 	public GameObject cam;
 	float moveFB, moveLR;
 	float rotX, rotY;
 	public bool webGLRightClickRotation = true;
 	float gravity = -9.8f;
+	float verticalVelocity = 0f;
 
 
 	void Start(){
@@ -27,7 +29,8 @@ public class CharController_Motor : MonoBehaviour {
 
 	void CheckForWaterHeight(){
 		if (transform.position.y < WaterHeight) {
-			gravity = 0f;			
+			gravity = 0f;
+			verticalVelocity = 0f;
 		} else {
 			gravity = -9.8f;
 		}
@@ -47,10 +50,13 @@ public class CharController_Motor : MonoBehaviour {
 
 		CheckForWaterHeight ();
 
+		if (character.isGrounded && Input.GetKeyDown(KeyCode.Space)) {
+			verticalVelocity = jumpForce;
+		}
 
-		Vector3 movement = new Vector3 (moveFB, gravity, moveLR);
+		verticalVelocity += gravity * Time.deltaTime;
 
-
+		Vector3 movement = new Vector3 (moveFB, verticalVelocity, moveLR);
 
 		if (webGLRightClickRotation) {
 			if (Input.GetKey (KeyCode.Mouse0)) {
