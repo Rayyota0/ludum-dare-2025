@@ -7,7 +7,7 @@ public class CharController_Motor : MonoBehaviour {
 	public float speed = 5.0f;
 	public float sensitivity = 30.0f;
 	public float WaterHeight = 15.5f;
-	public float jumpForce = 2.0f;
+	public float jumpForce = 4.0f;
 	CharacterController character;
 	public GameObject cam;
 	float moveFB, moveLR;
@@ -15,6 +15,7 @@ public class CharController_Motor : MonoBehaviour {
 	public bool webGLRightClickRotation = true;
 	float gravity = -9.8f;
 	float verticalVelocity = 0f;
+	bool isDead = false;
 
 
 	void Start(){
@@ -36,9 +37,26 @@ public class CharController_Motor : MonoBehaviour {
 		}
 	}
 
+	void OnControllerColliderHit(ControllerColliderHit hit) {
+		if (hit.gameObject.CompareTag("trap") && !isDead) {
+			Die();
+		}
+	}
+
+	void Die() {
+		isDead = true;
+		Debug.Log("Игрок умер от ловушки!");
+		// Здесь можно добавить эффекты смерти, звуки, анимации и т.д.
+	}
+
 
 
 	void Update(){
+		// Если игрок мертв, блокируем все движения
+		if (isDead) {
+			return;
+		}
+
 		moveFB = Input.GetAxis ("Horizontal") * speed;
 		moveLR = Input.GetAxis ("Vertical") * speed;
 
