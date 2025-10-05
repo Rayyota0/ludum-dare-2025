@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class CharController_Motor : MonoBehaviour {
 
@@ -17,15 +18,53 @@ public class CharController_Motor : MonoBehaviour {
 	float gravity = -9.8f;
 	float verticalVelocity = 0f;
 	bool isDead = false;
+	
+	[Header("Death Effects")]
+	public Image fadeImage;
+	public float fadeDuration = 0.5f;
 
 
 	void Start(){
-		//LockCursor ();
+		Cursor.visible = false;
+    	Cursor.lockState = CursorLockMode.Locked;
 		character = GetComponent<CharacterController> ();
 		if (Application.isEditor) {
 			webGLRightClickRotation = false;
 			sensitivity = sensitivity * 1.5f;
 		}
+		
+		// Создаем fadeImage если не назначен
+		if (fadeImage == null) {
+			CreateFadeImage();
+		}
+	}
+	
+	void CreateFadeImage() {
+		// Находим Canvas
+		Canvas canvas = FindObjectOfType<Canvas>();
+		if (canvas == null) {
+			GameObject canvasGO = new GameObject("Canvas");
+			canvas = canvasGO.AddComponent<Canvas>();
+			canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+			canvasGO.AddComponent<CanvasScaler>();
+			canvasGO.AddComponent<GraphicRaycaster>();
+		}
+		
+		// Создаем Image
+		GameObject fadeGO = new GameObject("FadeImage");
+		fadeGO.transform.SetParent(canvas.transform, false);
+		
+		fadeImage = fadeGO.AddComponent<Image>();
+		fadeImage.color = new Color(0, 0, 0, 0); // Прозрачный черный
+		
+		// Настраиваем RectTransform для полноэкранного размера
+		RectTransform rect = fadeImage.GetComponent<RectTransform>();
+		rect.anchorMin = Vector2.zero;
+		rect.anchorMax = Vector2.one;
+		rect.offsetMin = Vector2.zero;
+		rect.offsetMax = Vector2.zero;
+		
+		Debug.Log("FadeImage создан автоматически");
 	}
 
 
@@ -47,8 +86,49 @@ public class CharController_Motor : MonoBehaviour {
 	void Die() {
 		isDead = true;
 		Debug.Log("Игрок умер от ловушки!");
-		SceneManager.LoadScene("DieScene");
+		
+		StartCoroutine(DeathSequence());
 		// Здесь можно добавить эффекты смерти, звуки, анимации и т.д.
+	}
+	
+	IEnumerator DeathSequence() {
+		Debug.Log("Начинаем последовательность смерти");
+		
+		// Начинаем потемнение
+		if (fadeImage != null) {
+			Debug.Log("Запускаем потемнение");
+			yield return StartCoroutine(FadeToBlack());
+			Debug.Log("Потемнение завершено");
+		} else {
+			Debug.LogWarning("FadeImage не назначен! Пропускаем потемнение");
+		}
+		
+		// Небольшая задержка перед переходом
+		yield return new WaitForSeconds(0.5f);
+		
+		Debug.Log("Переходим на сцену смерти");
+		// Переходим на сцену смерти асинхронно
+		yield return SceneManager.LoadSceneAsync("DieScene");
+	}
+	
+	IEnumerator FadeToBlack() {
+		Debug.Log("Начинаем FadeToBlack");
+		Color fadeColor = fadeImage.color;
+		float elapsedTime = 0f;
+		
+		while (elapsedTime < fadeDuration) {
+			elapsedTime += Time.deltaTime;
+			float alpha = Mathf.Lerp(0f, 1f, elapsedTime / fadeDuration);
+			fadeColor.a = alpha;
+			fadeImage.color = fadeColor;
+			Debug.Log($"Fade progress: {alpha:F2}");
+			yield return null;
+		}
+		
+		// Убеждаемся, что экран полностью черный
+		fadeColor.a = 1f;
+		fadeImage.color = fadeColor;
+		Debug.Log("FadeToBlack завершен");
 	}
 
 
