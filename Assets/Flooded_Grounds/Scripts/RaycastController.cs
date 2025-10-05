@@ -1,34 +1,143 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
-public class RaycastCollector : MonoBehaviour
+public class RaycastController : MonoBehaviour
 {
+    [Header("Collection Features")]
     public int score = 0;
     public TextMeshProUGUI scoreText;
     public Camera mainCamera;
+    public int maxItems = 4;
+
+    [Header("Raycast Features")]
+    [SerializeField] private float rayLength = 5;
+
+    private NoteController _noteController;
+    private Gravestone _gravestone;
+
+    [Header("Crosshair")]
+    [SerializeField] private Image crosshair;
+    [SerializeField] private KeyCode interactKey;
+
+    void Start()
+    {
+    }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(1))
+        // Collection system (right mouse button)
+        if (Input.GetKeyDown(interactKey))
         {
             Debug.Log("ЛКМ нажата");
             if (mainCamera == null) return;
             
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 5f))
+            RaycastHit collectionHit;
+            if (Physics.Raycast(ray, out collectionHit, 5f))
             {
-                Debug.Log("Hit объект: " + hit.transform.name);
-                if (hit.transform.CompareTag("PickUp"))
+                Debug.Log("Hit объект: " + collectionHit.transform.name);
+                if (collectionHit.transform.CompareTag("PickUp"))
                 {
-                    Destroy(hit.transform.gameObject);
+                    Destroy(collectionHit.transform.gameObject);
                     score++;
+                    SpawnSlender(this.transform);
                     Debug.Log("Подобран предмет. Счет: " + score);
                     if (scoreText != null)
                         scoreText.text = "Looted: " + score.ToString() + " / 4";
                 }
             }
+        }
+
+        // Interaction system
+        if (Physics.Raycast(mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f)), transform.forward, out RaycastHit hit, rayLength))
+        {
+            var readebleItem = hit.collider.GetComponent<NoteController>();
+            var gravestoneItem = hit.collider.GetComponent<Gravestone>();
+            
+            if (readebleItem != null)
+            {
+                _noteController = readebleItem;
+                _gravestone = null;
+                HighlightCrosshair(true);
+            }
+            else if (gravestoneItem != null || hit.transform.CompareTag("Gravestone"))
+            {
+                _gravestone = gravestoneItem != null ? gravestoneItem : hit.transform.GetComponent<Gravestone>();
+                _noteController = null;
+                HighlightCrosshair(true);
+            }
+            else
+            {
+                ClearInteractions();
+            }
+        }
+        else
+        {
+            ClearInteractions();
+        }
+
+        if (_noteController != null)
+        {
+            if (Input.GetKeyDown(interactKey))
+            {
+                _noteController.ShowNote();
+            }
+        }
+        else if (_gravestone != null)
+        {
+            if (Input.GetKeyDown(interactKey))
+            {
+                if (score >= maxItems)
+                {
+                    // Load victory scene
+                    SceneManager.LoadScene("MainMenu");
+                }
+                else
+                {
+                    // Show progress message
+                    Debug.Log($"Собрано {score} из {maxItems} предметов");
+                    if (scoreText != null)
+                        scoreText.text = $"Собрано {score} из {maxItems} предметов";
+                }
+            }
+        }
+    }
+
+    void ClearInteractions()
+    {
+        if (_noteController != null || _gravestone != null)
+        {
+            HighlightCrosshair(false);
+            _noteController = null;
+            _gravestone = null;
+        }
+    }
+
+    void HighlightCrosshair(bool on)
+    {
+        if (on)
+        {
+            crosshair.color = Color.red;
+        }
+        else
+        {
+            crosshair.color = Color.white;
+        }
+    }
+
+    private void SpawnSlender(Transform player)
+    {
+        // Находим случайную точку на NavMesh в радиусе
+        Vector3 randomPoint = player.position + Random.insideUnitSphere * spawnRadius;
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomPoint, out hit, spawnRadius, NavMesh.AllAreas))
+        {
+            GameObject slenderObj = Instantiate(slenderPrefab, hit.position, Quaternion.identity);
+            slenderObj.GetComponent<SlenderController>().Initialize(player);
         }
     }
 }
