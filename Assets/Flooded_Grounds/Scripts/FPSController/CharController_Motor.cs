@@ -20,7 +20,8 @@ public class CharController_Motor : MonoBehaviour {
 
 
 	void Start(){
-		//LockCursor ();
+		Cursor.visible = false;
+		Cursor.lockState = CursorLockMode.Locked;
 		character = GetComponent<CharacterController> ();
 		if (Application.isEditor) {
 			webGLRightClickRotation = false;
@@ -70,7 +71,7 @@ public class CharController_Motor : MonoBehaviour {
 
 		CheckForWaterHeight ();
 
-		if (character.isGrounded && Input.GetKeyDown(KeyCode.Space)) {
+		if (Input.GetKeyDown(KeyCode.Space)) {
 			verticalVelocity = jumpForce;
 		}
 
