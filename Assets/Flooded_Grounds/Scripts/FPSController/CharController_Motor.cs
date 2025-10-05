@@ -23,6 +23,27 @@ public class CharController_Motor : MonoBehaviour {
 	public Image fadeImage;
 	public float fadeDuration = 0.5f;
 
+	private bool isFrozenBySlender = false;
+	private Quaternion targetCamRotation;
+	private Quaternion targetPlayerRotation;
+
+	// Вызывается из SlenderController
+	public void FreezeAndLookAt(Vector3 slenderPosition)
+	{
+		isFrozenBySlender = true;
+
+		// 1. Поворот игрока по горизонтали к Слендеру
+		Vector3 playerToTarget = slenderPosition - transform.position;
+		targetPlayerRotation = Quaternion.LookRotation(playerToTarget);
+
+		// Для камеры — смотрим точно на точку (включая высоту)
+		Vector3 camToTarget = slenderPosition - cam.transform.position;
+		targetCamRotation = Quaternion.LookRotation(camToTarget);
+
+		// 2. Поворот камеры (вверх/вниз) к Слендеру
+		Vector3 camToSlender = slenderPosition - cam.transform.position;
+		targetCamRotation = Quaternion.LookRotation(camToSlender);
+	}
 
 	void Start(){
 		Cursor.visible = false;
@@ -83,7 +104,7 @@ public class CharController_Motor : MonoBehaviour {
 		}
 	}
 
-	void Die() {
+	public void Die() {
 		isDead = true;
 		Debug.Log("Игрок умер от ловушки!");
 		
@@ -135,9 +156,16 @@ public class CharController_Motor : MonoBehaviour {
 
 	void Update(){
 		// Если игрок мертв, блокируем все движения
-		if (isDead) {
-			return;
-		}
+		if (isDead || isFrozenBySlender)
+    {
+        if (isFrozenBySlender)
+        {
+            // Плавно поворачиваем игрока и камеру к Слендеру
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetPlayerRotation, Time.deltaTime * 5f);
+            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetCamRotation, Time.deltaTime * 5f);
+        }
+        return;
+    }
 
 		moveFB = Input.GetAxis ("Horizontal") * speed;
 		moveLR = Input.GetAxis ("Vertical") * speed;
