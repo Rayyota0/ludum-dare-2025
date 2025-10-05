@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("StartGame");
-        SceneManager.LoadScene("EgorScene");
+        SceneManager.LoadScene("Scene_A");
     }
 
     public void ExitGame()

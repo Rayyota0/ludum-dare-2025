@@ -16,7 +16,7 @@ public class SlenderSpawner : MonoBehaviour
         {
             Debug.Log("Trigger");
             SpawnSlender(other.transform);
-            Destroy(gameObject); // убираем предмет
+            // Destroy(gameObject); // убираем предмет
         }
     }
 

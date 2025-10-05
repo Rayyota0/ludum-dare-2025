@@ -10,6 +10,7 @@ public class RaycastController : MonoBehaviour
     [Header("Collection Features")]
     public int score = 0;
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI errorText;
     public Camera mainCamera;
     public int maxItems = 4;
 
@@ -22,6 +23,11 @@ public class RaycastController : MonoBehaviour
     [Header("Crosshair")]
     [SerializeField] private Image crosshair;
     [SerializeField] private KeyCode interactKey;
+
+    [SerializeField] private GameObject slenderPrefab;
+    [SerializeField] private float spawnRadius = 50f;
+    [SerializeField] private float scareDistance = 2f;
+    [SerializeField] private float disappearAfterSeconds = 10f;
 
     void Start()
     {
@@ -91,17 +97,18 @@ public class RaycastController : MonoBehaviour
         {
             if (Input.GetKeyDown(interactKey))
             {
+                
                 if (score >= maxItems)
                 {
                     // Load victory scene
-                    SceneManager.LoadScene("MainMenu");
+                    SceneManager.LoadScene("StartMenu");
                 }
                 else
                 {
                     // Show progress message
                     Debug.Log($"Собрано {score} из {maxItems} предметов");
-                    if (scoreText != null)
-                        scoreText.text = $"Собрано {score} из {maxItems} предметов";
+                    if (errorText != null)
+                        errorText.text = "Иди собирай";
                 }
             }
         }
@@ -133,8 +140,8 @@ public class RaycastController : MonoBehaviour
     {
         // Находим случайную точку на NavMesh в радиусе
         Vector3 randomPoint = player.position + Random.insideUnitSphere * spawnRadius;
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPoint, out hit, spawnRadius, NavMesh.AllAreas))
+        UnityEngine.AI.NavMeshHit hit;
+        if (UnityEngine.AI.NavMesh.SamplePosition(randomPoint, out hit, spawnRadius, UnityEngine.AI.NavMesh.AllAreas))
         {
             GameObject slenderObj = Instantiate(slenderPrefab, hit.position, Quaternion.identity);
             slenderObj.GetComponent<SlenderController>().Initialize(player);
