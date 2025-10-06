@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using UnityEngine.SceneManagement;
 
 public class RaycastController : MonoBehaviour
 {
     [Header("Collection Features")]
     public int score = 0;
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI errorText;
+    public Text scoreText;
+    public Text errorText;
     public Camera mainCamera;
     public int maxItems = 4;
 

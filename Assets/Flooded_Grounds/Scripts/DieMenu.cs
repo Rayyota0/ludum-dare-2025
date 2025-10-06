@@ -20,6 +20,7 @@ public class DieMenu : MonoBehaviour
 
     public void MainMenu()
     {
+        Debug.Log("asds");
         SceneManager.LoadScene("StartMenu");
     }
 }

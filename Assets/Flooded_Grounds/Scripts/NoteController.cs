@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
 using UnityEngine.Events;
 public class NoteController : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class NoteController : MonoBehaviour
 
     [Header("UI Text")]
     [SerializeField] private GameObject noteCanvas;
-    [SerializeField] private TMP_Text noteTextAreaUI;
+    [SerializeField] private Text noteTextAreaUI;
 
     [Space(10)]
     [SerializeField][TextArea] private string noteText;

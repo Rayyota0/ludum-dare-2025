@@ -49,10 +49,10 @@ public class CharController_Motor : MonoBehaviour {
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
 		character = GetComponent<CharacterController> ();
-		if (Application.isEditor) {
+		// if (Application.isEditor) {
 			webGLRightClickRotation = false;
 			sensitivity = sensitivity * 1.5f;
-		}
+		// }
 		
 		// Создаем fadeImage если не назначен
 		if (fadeImage == null) {

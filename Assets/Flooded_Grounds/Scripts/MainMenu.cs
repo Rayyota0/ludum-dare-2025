@@ -8,6 +8,8 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         Debug.Log("MainMenu Start");
+        Cursor.visible = true;
+    	Cursor.lockState = CursorLockMode.None;
     }
 
     void Update()
